@@ -1,6 +1,14 @@
-var tulind = require("tulind");
 var semver = require("semver");
 var _ = require('lodash');
+
+// validate that talib is installed, if not we'll throw an excepion which will
+// prevent further loading or out outside this module
+try {
+    var tulind = require("tulind");
+} catch (e) {
+    module.exports = null;
+    return;
+}
 
 var tulindError = 'Gekko was unable to configure Tulip Indicators:\n\t';
 
@@ -25,12 +33,12 @@ var verifyParams = (methodName, params) => {
 
     _.each(requiredParams, paramName => {
         if(!_.has(params, paramName))
-            throw talibError + methodName + ' requires ' + paramName + '.';
+            throw tulindError + methodName + ' requires ' + paramName + '.';
 
         var val = params[paramName];
 
         if(!_.isNumber(val))
-            throw talibError + paramName + ' needs to be a number';
+            throw tulindError + paramName + ' needs to be a number';
     });
 }
 
@@ -72,7 +80,7 @@ methods.adx = {
         return (data, callback) => execute(callback, {
             indicator: tulind.indicators.adx,
             inputs: [data.high, data.low, data.close],
-            options: [params.optInTimPeriod],
+            options: [params.optInTimePeriod],
             results: ['result'],
         });
     }
@@ -137,7 +145,7 @@ methods.aroon = {
 methods.aroonosc = {
     requires: ['optInTimePeriod'],
     create: (params) => {
-        verifyParams('arronosc', params);
+        verifyParams('aroonosc', params);
 
         return (data, callback) => execute(callback, {
             indicator: tulind.indicators.aroonosc,

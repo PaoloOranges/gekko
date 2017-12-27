@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var fs = require('fs');
 var util = require('../../core/util');
 var config = util.getConfig();
 var dirs = util.dirs();
@@ -8,87 +9,29 @@ var ENV = util.gekkoEnv();
 var mode = util.gekkoMode();
 var startTime = util.getStartTime();
 
-if(config.tradingAdvisor.talib.enabled) {
-  // verify talib is installed properly
-  var pluginHelper = require(dirs.core + 'pluginUtil');
-  var pluginMock = {
-    slug: 'tradingAdvisor',
-    dependencies: [{
-      module: 'talib',
-      version: config.tradingAdvisor.talib.version
-    }]
-  };
-
-  var cannotLoad = pluginHelper.cannotLoad(pluginMock);
-  if(cannotLoad)
-    util.die(cannotLoad);
-
-  var talib = require(dirs.core + 'talib');
+var talib = require(dirs.core + 'talib');
+if(talib == null) {
+  log.warn('TALIB indicators could not be loaded, they will be unavailable.');
 }
 
-if(config.tradingAdvisor.tulind.enabled) {
-  // verify talib is installed properly
-  var pluginHelper = require(dirs.core + 'pluginUtil');
-  var pluginMock = {
-    slug: 'tradingAdvisor',
-    dependencies: [{
-      module: 'tulind',
-      version: config.tradingAdvisor.tulind.version
-    }]
-  };
-
-  var cannotLoad = pluginHelper.cannotLoad(pluginMock);
-  if(cannotLoad)
-    util.die(cannotLoad);
-
-  var tulind = require(dirs.core + 'tulind');
+var tulind = require(dirs.core + 'tulind');
+if(tulind == null) {
+  log.warn('TULIP indicators could not be loaded, they will be unavailable.');
 }
 
 var indicatorsPath = dirs.methods + 'indicators/';
+var indicatorFiles = fs.readdirSync(indicatorsPath);
+var Indicators = {};
 
-var Indicators = {
-  MACD: {
-    factory: require(indicatorsPath + 'MACD'),
-    input: 'price'
-  },
-  EMA: {
-    factory: require(indicatorsPath + 'EMA'),
-    input: 'price'
-  },
-  DEMA: {
-    factory: require(indicatorsPath + 'DEMA'),
-    input: 'price'
-  },
-  PPO: {
-    factory: require(indicatorsPath + 'PPO'),
-    input: 'price'
-  },
-  LRC: {
-    factory: require(indicatorsPath + 'LRC'),
-    input: 'price'
-  },
-  SMA: {
-    factory: require(indicatorsPath + 'SMA'),
-    input: 'price'
-  },
-
-  RSI: {
-    factory: require(indicatorsPath + 'RSI'),
-    input: 'candle'
-  },
-  TSI: {
-    factory: require(indicatorsPath + 'TSI'),
-    input: 'candle'
-  },
-  UO: {
-    factory: require(indicatorsPath + 'UO'),
-    input: 'candle'
-  },
-  CCI: {
-    factory: require(indicatorsPath + 'CCI'),
-    input: 'candle'
-  }
-};
+_.each(indicatorFiles, function(indicator) {
+  const indicatorName = indicator.split(".")[0];
+  if (indicatorName[0] != "_")
+    try {
+      Indicators[indicatorName] = require(indicatorsPath + indicator);
+    } catch (e) {
+      log.error("Failed to load indicator", indicatorName);
+    }
+});
 
 var allowedIndicators = _.keys(Indicators);
 var allowedTalibIndicators = _.keys(talib);
@@ -348,10 +291,9 @@ Base.prototype.addIndicator = function(name, type, parameters) {
   if(this.setup)
     util.die('Can only add indicators in the init method!');
 
-  this.indicators[name] = new Indicators[type].factory(parameters);
+  this.indicators[name] = new Indicators[type](parameters);
 
   // some indicators need a price stream, others need full candles
-  this.indicators[name].input = Indicators[type].input;
 }
 
 Base.prototype.advice = function(newPosition, _candle) {
