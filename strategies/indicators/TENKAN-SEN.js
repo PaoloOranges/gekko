@@ -1,16 +1,31 @@
 // @link https://en.wikipedia.org/wiki/Ichimoku_Kink%C5%8D_Hy%C5%8D#Tenkan-sen
+const max = require('tulind').indicators.max;
+
+const CircularBuffer = require('circular-buffer');
 
 var Indicator = function (weight) {
-  var max = this.tulipIndicators.max;
+  this.weight = weight;
+  this.buffer = new CircularBuffer(weight); 
+  this.maxValue = 0;
 }
 
-Indicator.prototype.update = function (price) {
+function maxCallback(err, results)
+{
+  console.debug('Result is %d', results[0][0]);
+  maxValue = results[0][0];
+}
 
+Indicator.prototype.update = function (price) 
+{
+  this.buffer.push(price);
+  max.indicator([this.buffer.toarray()], [this.buffer.size()], maxCallback);
+
+  return maxValue;
 }
 
 
-Indicator.prototype.calculate = function (price) {
-
+Indicator.prototype.calculate = function (price) 
+{
 }
 
 module.exports = Indicator;
