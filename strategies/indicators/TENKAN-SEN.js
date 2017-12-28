@@ -1,6 +1,8 @@
 // @link https://en.wikipedia.org/wiki/Ichimoku_Kink%C5%8D_Hy%C5%8D#Tenkan-sen
-const max = require('tulind').indicators.max;
+// @link http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ichimoku_cloud
+// TENKAN-SDN (Conversion Line)
 
+const max = require('tulind').indicators.max;
 const CircularBuffer = require('circular-buffer');
 
 var Indicator = function (weight) {
@@ -22,7 +24,6 @@ Indicator.prototype.update = function (price)
 
   return maxValue;
 }
-
 
 Indicator.prototype.calculate = function (price) 
 {
