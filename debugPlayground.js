@@ -2,6 +2,7 @@
 
 const IchimokuCloud = require('./strategies/indicators/ICHIMOKU-CLOUD.js')
 const tulind = require('tulind');
+const util = require('util')
 
 var config = {
     tenkansen : 9,
@@ -18,4 +19,5 @@ tS.update(7);
 tS.update(-6);
 var result = tS.update(2);
 
-console.log('result so far %d ', result);
+// alternative shortcut
+console.log(util.inspect(result, false, null))
