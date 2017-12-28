@@ -1,9 +1,16 @@
 // Playground 
 
-const TenkanSen = require('./strategies/indicators/TENKAN-SEN.js')
+const IchimokuCloud = require('./strategies/indicators/ICHIMOKU-CLOUD.js')
 const tulind = require('tulind');
 
-var tS = new TenkanSen(5);
+var config = {
+    tenkansen : 9,
+    kijunsen : 26,
+    senkouspanb : 52,
+    chickouspan : 26
+}
+
+var tS = new IchimokuCloud(config);
 
 tS.update(5);
 tS.update(15);
