@@ -8,7 +8,7 @@ var config = {
     tenkansen : 9,
     kijunsen : 26,
     senkouspanb : 52,
-    chickouspan : 26
+    chikouspan : 26
 }
 
 var tS = new IchimokuCloud(config);
@@ -17,7 +17,8 @@ tS.update(5);
 tS.update(15);
 tS.update(7);
 tS.update(-6);
-var result = tS.update(2);
+tS.update(2);
+var result = tS.result;
 
 // alternative shortcut
 console.log(util.inspect(result, false, null))

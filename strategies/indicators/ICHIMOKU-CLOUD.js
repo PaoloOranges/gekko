@@ -20,7 +20,7 @@ var Indicator = function (config)
     this.tenkanSen = new CircularBuffer(config.tenkansen);
     this.kijunSen = new CircularBuffer(config.kijunsen);
     this.senkouSpanB = new CircularBuffer(config.senkouspanb);
-    this.chickouSpan = new CircularBuffer(config.chikouspan);
+    this.chikouSpan = new CircularBuffer(config.chikouspan);
 }
 
 Indicator.prototype.computeTenkanSen = function()
@@ -68,15 +68,19 @@ Indicator.prototype.update = function (price)
     this.tenkanSen.push(price);
     this.kijunSen.push(price);
     this.senkouSpanB.push(price);
-    this.chickouSpan.push(price);
+    this.chikouSpan.push(price);
 
     var tenkanSenValue = this.computeTenkanSen();
     var kijunSenValue = this.computeTenkanSen();
     var senkouSpanAValue = this.computeSenkouSpanA(tenkanSenValue, kijunSenValue);
     var senkousSpanBValue = this.computeSenkouSpanB();
-    var chickouSpanValue = this.chickouSpan.get(this.chickouSpan.size() -1);
+    var chikouSpanValue = this.chikouSpan.get(this.chikouSpan.size() -1);
 
-    return [tenkanSenValue, kijunSenValue, senkouSpanAValue, senkousSpanBValue, chickouSpanValue];
+    this.result = { tenkanSen : tenkanSenValue, 
+        kijunSen : kijunSenValue, 
+        senkouSpanA : senkouSpanAValue, 
+        senkouSpanB : senkousSpanBValue, 
+        chikouSpan : chikouSpanValue};
 }
 
 Indicator.prototype.calculate = function (price) 
