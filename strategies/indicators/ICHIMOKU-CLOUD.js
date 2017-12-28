@@ -10,11 +10,17 @@ var Indicator = function (config)
     // TENKAN-SEN (Conversion Line) period (default 9)
     // KIJUN-SEN (Base Line) period (default 26)
     // SENKOU-SPAN B (Leading Span B) period (default 52)
-    // CHICKOU-SPAN (Lagging span) period (default 26)
+    // CHIKOU-SPAN (Lagging span) period (default 26)
+    console.log('ICHIMOKU-CLOUD using:');
+    console.log('TENKAN-SEN (Conversion Line) period %d', config.tenkansen);
+    console.log('KIJUN-SEN (Base Line) period %d', config.kijunsen);
+    console.log('SENKOU-SPAN B (Leading Span B) period %d', config.senkouspanb);
+    console.log('CHIKOU-SPAN (Lagging span) period %d', config.chikouspan);
+
     this.tenkanSen = new CircularBuffer(config.tenkansen);
     this.kijunSen = new CircularBuffer(config.kijunsen);
     this.senkouSpanB = new CircularBuffer(config.senkouspanb);
-    this.chickouSpan = new CircularBuffer(config.chickouspan);
+    this.chickouSpan = new CircularBuffer(config.chikouspan);
 }
 
 Indicator.prototype.computeTenkanSen = function()
