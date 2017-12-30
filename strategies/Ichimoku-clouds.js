@@ -24,7 +24,7 @@ strat.log = function() {
 // information, check if we should
 // update or not.
 strat.check = function() {
-  
+
 }
 
 module.exports = strat;
