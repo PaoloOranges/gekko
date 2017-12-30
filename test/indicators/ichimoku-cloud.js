@@ -39,7 +39,8 @@ describe('indicators/ICHIMOKU-CLOUD', function() {
         ichimokuCloud.update(p);
         if(i >= configPeriods.tenkansen)
         {
-            expect(ichimokuCloud.result.tenkanSen).to.equal(verifiedTenkanSen[i]);
+            var j = i - configPeriods.tenkanSen;
+            expect(ichimokuCloud.result.tenkanSen[j]).to.equal(verifiedTenkanSen[j]);
         }        
       });
     });
