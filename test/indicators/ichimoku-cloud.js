@@ -40,7 +40,6 @@ describe('indicators/ICHIMOKU-CLOUD', function() {
         if(i >= configPeriods.tenkansen - 1)
         {
             var j = i - (configPeriods.tenkansen - 1);
-            console.log("j: %d, r: %f, e: %f", j, ichimokuCloud.result.tenkanSen, verifiedTenkanSen[j]);
             expect(ichimokuCloud.result.tenkanSen).to.closeTo(verifiedTenkanSen[j], 0.0001);
         }        
       });      
@@ -51,10 +50,12 @@ describe('indicators/ICHIMOKU-CLOUD', function() {
         var ichimokuCloud = new ICHIMOKUCLOUD(configPeriods);
         _.each(prices, function(p, i) {
           ichimokuCloud.update(p);
-          if(i >= configPeriods.kijunsen)
+          if(i >= configPeriods.kijunsen - 1)
           {
-              var j = i - configPeriods.kijunsen;
-              expect(ichimokuCloud.result.kijunSen).to.equal(verifiedKijunSen[j]);
+              var j = i - (configPeriods.kijunsen - 1);
+              console.log("j: %d, r: %f, e: %f", j, ichimokuCloud.result.kijunSen, verifiedKijunSen[j]);
+            
+              expect(ichimokuCloud.result.kijunSen).to.closeTo(verifiedKijunSen[j], 0.0001);
           }        
         });      
       });  

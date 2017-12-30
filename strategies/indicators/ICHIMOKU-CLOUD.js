@@ -71,7 +71,7 @@ Indicator.prototype.update = function (price)
     this.chikouSpan.push(price);
 
     var tenkanSenValue = this.computeTenkanSen();
-    var kijunSenValue = this.computeTenkanSen();
+    var kijunSenValue = this.computeKijunSen();
     var senkouSpanAValue = this.computeSenkouSpanA(tenkanSenValue, kijunSenValue);
     var senkousSpanBValue = this.computeSenkouSpanB();
     var chikouSpanValue = this.chikouSpan.get(this.chikouSpan.size() -1);
