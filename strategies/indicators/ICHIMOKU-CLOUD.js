@@ -51,11 +51,10 @@ Indicator.prototype.getChikouSpan = function()
     return this.priceBuffer.get(valIndex);
 }
 
-Indicator.prototype.computeTenkanSen = function()
+Indicator.prototype.computeLine = function(bufferAsArray)
 {
     var maxVal = 0;
     var minVal = 0;
-    var bufferAsArray = this.getTenkanSenBuffer();
     const bufferSize = bufferAsArray.length;
     MaxIndicator.indicator([bufferAsArray], [bufferSize], function(err, res) { maxVal = res[0][0];});
     MinIndicator.indicator([bufferAsArray], [bufferSize], function(err, res) { minVal = res[0][0];});
@@ -63,16 +62,14 @@ Indicator.prototype.computeTenkanSen = function()
     return (maxVal + minVal) / 2;
 }
 
+Indicator.prototype.computeTenkanSen = function()
+{
+    return this.computeLine(this.getTenkanSenBuffer());
+}
+
 Indicator.prototype.computeKijunSen = function()
 {
-    var maxVal = 0;
-    var minVal = 0;
-    var bufferAsArray = this.getKijunSenBuffer();
-    const bufferSize = bufferAsArray.length;
-    MaxIndicator.indicator([bufferAsArray], [bufferSize], function(err, res) { maxVal = res[0][0];});
-    MinIndicator.indicator([bufferAsArray], [bufferSize], function(err, res) { minVal = res[0][0];});
-
-    return (maxVal + minVal) / 2;
+    return this.computeLine(this.getKijunSenBuffer());
 }
 Indicator.prototype.computeSenkouSpanA = function(tenkanSenValue, kijunSenValue)
 {
@@ -81,14 +78,7 @@ Indicator.prototype.computeSenkouSpanA = function(tenkanSenValue, kijunSenValue)
 
 Indicator.prototype.computeSenkouSpanB = function()
 {
-    var maxVal = 0;
-    var minVal = 0;
-    var bufferAsArray = this.getSenkouSpanBBuffer();
-    const bufferSize = bufferAsArray.length;
-    MaxIndicator.indicator([bufferAsArray], [bufferSize], function(err, res) { maxVal = res[0][0];});
-    MinIndicator.indicator([bufferAsArray], [bufferSize], function(err, res) { minVal = res[0][0];});
-
-    return (maxVal + minVal) / 2;
+    return this.computeLine(this.getSenkouSpanBBuffer());
 }
 
 Indicator.prototype.update = function (price) 
