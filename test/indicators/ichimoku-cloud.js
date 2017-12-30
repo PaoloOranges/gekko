@@ -37,12 +37,25 @@ describe('indicators/ICHIMOKU-CLOUD', function() {
       var ichimokuCloud = new ICHIMOKUCLOUD(configPeriods);
       _.each(prices, function(p, i) {
         ichimokuCloud.update(p);
-        if(i >= configPeriods.tenkansen)
+        if(i >= configPeriods.tenkansen - 1)
         {
-            var j = i - configPeriods.tenkanSen;
-            expect(ichimokuCloud.result.tenkanSen[j]).to.equal(verifiedTenkanSen[j]);
+            var j = i - (configPeriods.tenkansen - 1);
+            console.log("j: %d, r: %f, e: %f", j, ichimokuCloud.result.tenkanSen, verifiedTenkanSen[j]);
+            expect(ichimokuCloud.result.tenkanSen).to.closeTo(verifiedTenkanSen[j], 0.0001);
         }        
-      });
+      });      
     });
   
+
+    it('should correctly calculate KijunSen with default weight 26', function() {
+        var ichimokuCloud = new ICHIMOKUCLOUD(configPeriods);
+        _.each(prices, function(p, i) {
+          ichimokuCloud.update(p);
+          if(i >= configPeriods.kijunsen)
+          {
+              var j = i - configPeriods.kijunsen;
+              expect(ichimokuCloud.result.kijunSen).to.equal(verifiedKijunSen[j]);
+          }        
+        });      
+      });  
   });
