@@ -1,0 +1,8 @@
+[MACross]
+fast = 12
+slow = 26
+
+[MACD]
+fast = 12
+slow = 26
+signal = 9
