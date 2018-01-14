@@ -39,8 +39,6 @@ strat.init = function() {
 
 // What happens on every new candle?
 strat.update = function(candle) {
-
-  log.debug(' UPDATE PAOLO ');
 }
 
 // For debugging purposes.
@@ -54,11 +52,14 @@ strat.check = function() {
 
   log.debug(' CHECK PAOLO ');
 
-  var fastMA = this.tulipIndicators.fastMA;
+  const fastMA = this.tulipIndicators.fastMA.result.result;
+  const slowMA = this.tulipIndicators.slowMA.result.result;
   
-  log.debug(this.tulipIndicators);
+  log.debug(this.tulipIndicators.macd.result.macd);
+  log.debug(this.tulipIndicators.macd.result.macdSignal);
+  log.debug(this.tulipIndicators.macd.result.macdHistogram);
   log.debug(fastMA);
-  log.debug(this.tulipIndicators.slowMA);
+  log.debug(slowMA);
 
   // if(this.currentTrend === 'long') {
 
