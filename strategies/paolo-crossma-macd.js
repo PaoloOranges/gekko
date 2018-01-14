@@ -15,7 +15,7 @@ var strat = {};
 
 // Prepare everything our method needs
 strat.init = function() {
-  this.currentTrend = 'none';
+  this.trend = 'none';
   this.requiredHistory = this.tradingAdvisor.historySize;
 
   const tulipMACDParameters = {
@@ -54,6 +54,9 @@ strat.check = function() {
 
   const fastMA = this.tulipIndicators.fastMA.result.result;
   const slowMA = this.tulipIndicators.slowMA.result.result;
+  const macd = this.tulipIndicators.macd.result.macd;
+  const macdSignal = this.tulipIndicators.macd.result.macdSignal;
+  const macdHistogram = this.tulipIndicators.macd.result.macdHistogram
   
   log.debug(this.tulipIndicators.macd.result.macd);
   log.debug(this.tulipIndicators.macd.result.macdSignal);
@@ -61,19 +64,41 @@ strat.check = function() {
   log.debug(fastMA);
   log.debug(slowMA);
 
-  // if(this.currentTrend === 'long') {
-
-  //   // If it was long, set it to short
-  //   this.currentTrend = 'short';
-  //   this.advice('short');
-
-  // } else {
-
-  //   // If it was short, set it to long
-  //   this.currentTrend = 'long';
-  //   this.advice('long');
-
-  // }
+  const isMACDOverSignal = macd > macdSignal;
+  const isFastUnderSlowMA = fastMA < slowMA;
+  if(isMACDOverSignal)
+  {
+    if(macdHistogram > 0.0)
+    {
+      this.longIfNot();
+    }
+  }
+  else
+  {
+    if(isFastUnderSlowMA)
+    {
+      this.shortIfNot();
+    }
+  }
 }
 
+strat.shortIfNot = function()
+{  
+  this.adviseIfNot('short');
+}
+
+strat.longIfNot = function()
+{
+  this.adviseIfNot('long');
+}
+
+strat.adviseIfNot = function(value)
+{
+  if(this.trend !== value)
+  {
+    log.debug('send advise %s', value);
+    this.trend = value;
+    this.advice(value);
+  }
+}
 module.exports = strat;
