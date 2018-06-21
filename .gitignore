@@ -47,3 +47,6 @@ volumes
 config.js
 config-*.js
 SECRET-api-keys.json
+.vs/*
+/bin/Microsoft.NodejsTools.WebRole.dll
+*.njsproj
