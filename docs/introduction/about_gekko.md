@@ -4,15 +4,15 @@ Gekko is a **free and open source** Bitcoin TA trading and backtesting platform 
 
 *Use Gekko at your own risk.*
 
-![screen shot of gekko backtesting](https://cloud.githubusercontent.com/assets/969743/24838718/8c790a86-1d45-11e7-99ae-e7e551cb40cb.png)
+![screen shot of gekko backtesting](https://user-images.githubusercontent.com/969743/35054500-fc705b46-fbac-11e7-9652-306c468505a3.png)
 
 ## The gist
 
-Gekko is a tool that makes it very easy to automate your own trading stragies.
+Gekko is a tool that makes it very easy to automate your own trading strategies.
 
 ![gist of gekko](https://gekko.wizb.it/_static/gekko-gist.png)
 
-You can either create your own trading strategy or start with the build in example strategies. Once you have a strategy you can use Gekko to automatically run it in a few different ways:
+You can either create your own trading strategy or start with the built-in example strategies. Once you have a strategy you can use Gekko to automatically run it in a few different ways:
 
 - **Backtest**: You can start a simulation of the strategy over a historical data period and Gekko will tell you what would have happened (which trades would have been performed as well as overall performance and risk metrics).
 - **Paper trader**: You can run the strategy in realtime simulate trading (trade with fake money) to see in realtime how profitable your strategy would have been.
@@ -22,11 +22,11 @@ All the above modes can be run from the user interface, this interface will show
 
 ## Strategies
 
-Gekko comes with some [example strategies](../strategies/example_strategies.md) (which implement a single indicator). But with some basic javascript you can [create your own strategies](../strategies/creating_a_strategy.md). You can use over 130 indicators to create your perfect prediction model ([full list](../strategies/talib_indicators.md) of supported indicators). *Why don't you combine Bollinger Bands, CCI and MACD with a STOCHRSI indicator?*
+Gekko comes with some [example strategies](../strategies/introduction.md) (which implement a single indicator). But with some basic javascript you can [create your own strategies](../strategies/creating_a_strategy.md). You can use over 130 indicators to create your perfect prediction model (using [Talib's indicators](../strategies/talib_indicators.md) or [Tulip's indicators](../strategies/tulip_indicators.md)). *Why don't you combine Bollinger Bands, CCI and MACD with a STOCHRSI indicator?*
 
 ## Automated Trading platform
 
-Gekko can watch the realtime markets, automatically excecuting and evaluating your strategies in the process. Whilst doing this Gekko will store all market data it sees, this makes it possible to later simulate trading strategies against historical data to see whether they would have been profitable (backtesting).
+Gekko can watch the realtime markets, automatically executing and evaluating your strategies in the process. Whilst doing this Gekko will store all market data it sees, this makes it possible to later simulate trading strategies against historical data to see whether they would have been profitable (backtesting).
 
 ## Limitations
 

@@ -3,6 +3,10 @@ import store from '../../'
 import { bus } from '../../../components/global/ws'
 
 const transformMarkets = backendData => {
+  if(!backendData) {
+    return {};
+  }
+
   var exchangesRaw = backendData;
   var exchangesTemp = {};
 
@@ -14,6 +18,10 @@ const transformMarkets = backendData => {
       exchangesTemp[e.slug].markets[currency] = exchangesTemp[e.slug].markets[currency] || [];
       exchangesTemp[e.slug].markets[currency].push( asset );
     });
+
+    if ("exchangeMaxHistoryAge" in e) {
+      exchangesTemp[e.slug].exchangeMaxHistoryAge = e.exchangeMaxHistoryAge;
+    }
 
     exchangesTemp[e.slug].importable = e.providesFullHistory ? true : false;
     exchangesTemp[e.slug].tradable = e.tradable ? true : false;

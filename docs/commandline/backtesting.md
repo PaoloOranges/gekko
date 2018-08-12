@@ -6,7 +6,7 @@ Gekko is able to backtest strategies against historical data.
 
 ## Setup
 
-For backtesting you should [enable and configure](./Plugins.md) the following plugins:
+For backtesting you should [enable and configure](./plugins.md) the following plugins:
 
  - trading advisor (to run your strategy).
  - paper trader (to execute simulated trades).
@@ -24,7 +24,7 @@ In your config set the `backtest.daterange` to `scan`. This will force Gekko to 
 
 ## Run
 
-    node gekko --backtest
+    node gekko --config config.js --backtest
 
 The result will be something like this:
 

@@ -1,9 +1,8 @@
-<template lang='jade'>
+<template lang='pug'>
 .grd
   .px1
     h3 Paper trader
-    em(v-if='toggle === "closed"')
-      a(href='#', v-on:click.prevent='switchToggle') Change paper trader settings
+    a.btn--primary(href='#', v-on:click.prevent='switchToggle', v-if='toggle === "closed"') Change paper trader settings
     template(v-if='toggle === "open"')
       p Settings:
       textarea.params(v-model='rawPaperTraderParams')

@@ -2,7 +2,7 @@ var _ = require('lodash');
 var fs = require('fs');
 var moment = require('moment');
 
-var util = require('../../core/util');
+var util = require('../util');
 var config = util.getConfig();
 var dirs = util.dirs();
 var log = require(dirs.core + '/log');
@@ -18,9 +18,14 @@ Stitcher.prototype.ago = function(ts) {
 }
 
 Stitcher.prototype.verifyExchange = function() {
-  var exchangeChecker = require(dirs.core + 'exchangeChecker');
-  var slug = config.watch.exchange.toLowerCase();
-  var exchange = exchangeChecker.getExchangeCapabilities(slug);
+  const exchangeChecker = require(dirs.gekko + 'exchange/exchangeChecker');
+  const slug = config.watch.exchange.toLowerCase();
+  let exchange;
+  try {
+    exchange = exchangeChecker.getExchangeCapabilities(slug);
+  } catch(e) {
+    util.die(e.message);
+  }
 
   if(!exchange)
     util.die(`Unsupported exchange: ${slug}`);
@@ -43,7 +48,7 @@ Stitcher.prototype.prepareHistoricalData = function(done) {
 
   var requiredHistory = config.tradingAdvisor.candleSize * config.tradingAdvisor.historySize;
   var Reader = require(dirs.plugins + config.adapter + '/reader');
-
+  
   this.reader = new Reader;
 
   log.info(
@@ -53,13 +58,19 @@ Stitcher.prototype.prepareHistoricalData = function(done) {
   );
 
   var endTime = moment().utc().startOf('minute');
-  var idealStartTime = endTime.clone().subtract('m', requiredHistory);
-
+  var idealStartTime = endTime.clone().subtract(requiredHistory, 'm');
+  
   this.reader.mostRecentWindow(idealStartTime, endTime, function(localData) {
     // now we know what data is locally available, what
     // data would we need from the exchange?
+    
     if(!localData) {
       log.info('\tNo usable local data available, trying to get as much as possible from the exchange..');
+      var idealExchangeStartTime = idealStartTime.clone();
+      var idealExchangeStartTimeTS = idealExchangeStartTime.unix();
+    }
+    else if (idealStartTime.unix() < localData.from) {
+      log.info('\tLocal data is still too recent, trying to get as much as possible from the exchange');
       var idealExchangeStartTime = idealStartTime.clone();
       var idealExchangeStartTimeTS = idealExchangeStartTime.unix();
     }
@@ -90,9 +101,9 @@ Stitcher.prototype.prepareHistoricalData = function(done) {
     var maxMinutesAgo = 4 * 60; // 4 hours
     if(minutesAgo > maxMinutesAgo) {
       log.info('\tPreventing Gekko from requesting', minutesAgo, 'minutes of history.');
-      idealExchangeStartTime = endTime.clone().subtract('minutes', maxMinutesAgo);
+      idealExchangeStartTime = endTime.clone().subtract(maxMinutesAgo, 'minutes');
       idealExchangeStartTimeTS = idealExchangeStartTime.unix();
-    }
+    } 
 
     log.debug('\tFetching exchange data since', this.ago(idealExchangeStartTimeTS))
     this.checkExchangeTrades(idealExchangeStartTime, function(err, exchangeData) {
@@ -141,7 +152,7 @@ Stitcher.prototype.prepareHistoricalData = function(done) {
         var from = localData.from;
         var to = moment.unix(exchangeData.from).utc()
           .startOf('minute')
-          .subtract('minute', 1)
+          .subtract(1, 'minute')
           .unix();
 
         log.debug('\tSeeding with:');
@@ -175,18 +186,21 @@ Stitcher.prototype.prepareHistoricalData = function(done) {
 
 Stitcher.prototype.checkExchangeTrades = function(since, next) {
   var provider = config.watch.exchange.toLowerCase();
-  var DataProvider = require(util.dirs().gekko + 'exchanges/' + provider);
+  var DataProvider = require(util.dirs().gekko + 'exchange/wrappers/' + provider);
 
   var exchangeConfig = config.watch;
-  
+
   // include trader config if trading is enabled
   if (_.isObject(config.trader) && config.trader.enabled) {
     exchangeConfig = _.extend(config.watch, config.trader);
   }
 
   var watcher = new DataProvider(exchangeConfig);
-
   watcher.getTrades(since, function(e, d) {
+    if(e) {
+      util.die(e.message);
+    }
+
     if(_.isEmpty(d))
       return util.die(
         `Gekko tried to retrieve data since ${since.format('YYYY-MM-DD HH:mm:ss')}, however

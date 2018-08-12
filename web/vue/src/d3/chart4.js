@@ -3,18 +3,26 @@ import _ from 'lodash';
 
 export default function(_data, _trades, _height) {
 
+  const toDate = i => {
+    if(_.isNumber(i)) {
+      return moment.unix(i).utc().toDate();
+    } else {
+      return moment.utc(i).toDate();
+    }
+  }
+
   const trades = _trades.map(t => {
     return {
       price: t.price,
-      date: new Date(t.date),
+      date: toDate(t.date),
       action: t.action
     }
   });
 
   const data = _data.map(c => {
     return {
-      price: c.close,
-      date: new Date(c.start)
+      price: c.open,
+      date: toDate(c.start)
     }
   });
 
@@ -31,8 +39,8 @@ export default function(_data, _trades, _height) {
   var width = +svg.attr("width") - margin.left - margin.right;
   var height2 = _height - margin2.top - margin2.bottom;
 
-  var x = d3.scaleTime().range([0, width]),
-      x2 = d3.scaleTime().range([0, width]),
+  var x = d3.scaleUtc().range([0, width]),
+      x2 = d3.scaleUtc().range([0, width]),
       y = d3.scaleLinear().range([height, 0]),
       y2 = d3.scaleLinear().range([height2, 0]);
 

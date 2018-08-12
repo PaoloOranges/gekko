@@ -44,4 +44,21 @@ process.send('ready');
 process.on('message', function(m) {
   if(m.what === 'start')
     start(m.mode, m.config);
+
+  if(m.what === 'exit')
+    process.exit(0);
 });
+
+process.on('disconnect', function() {
+  console.log('disconnect');
+  process.exit(-1);
+})
+
+process
+  .on('unhandledRejection', (message, p) => {
+    process.send({type: 'error', message: message});
+  })
+  .on('uncaughtException', err => {
+    process.send({type: 'error', error: err});
+    process.exit(1);
+  });

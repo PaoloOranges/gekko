@@ -1,11 +1,11 @@
-<template lang='jade'>
+<template lang='pug'>
   div
     h2.contain Backtest
-    .hr.contain
+    .hr
     config-builder(v-on:config='check')
     div(v-if='backtestable')
       .txt--center
-        a.w100--s.my1.btn--blue(href='#', v-if='backtestState !== "fetching"', v-on:click.prevent='run') Backtest
+        a.w100--s.my1.btn--primary(href='#', v-if='backtestState !== "fetching"', v-on:click.prevent='run') Backtest
         div(v-if='backtestState === "fetching"').scan-btn
           p Running backtest..
           spinner
@@ -40,18 +40,7 @@ export default {
     run: function() {
       this.backtestState = 'fetching';
 
-      const req = {
-        gekkoConfig: this.config,
-        data: {
-          candleProps: ['close', 'start'],
-          indicatorResults: true,
-          report: true,
-          roundtrips: true,
-          trades: true
-        }
-      }
-
-      post('backtest', req, (error, response) => {
+      post('backtest', this.config, (error, response) => {
         this.backtestState = 'fetched';
         this.backtestResult = response;
       });
@@ -64,11 +53,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.contain {
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-}
-</style>

@@ -109,7 +109,7 @@ CandleCreator.prototype.calculateCandles = function() {
 
   // catch error from high volume getTrades
   if (this.lastTrade !== undefined)
-    // create a string referencing to minute this trade happened in
+    // create a string referencing the minute this trade happened in
     var lastMinute = this.lastTrade.date.format('YYYY-MM-DD HH:mm');
 
   var candles = _.map(this.buckets, function(bucket, name) {
@@ -174,7 +174,7 @@ CandleCreator.prototype.addEmptyCandles = function(candles) {
   });
 
   while(start < end) {
-    start.add('minute', 1);
+    start.add(1, 'm');
     i = +start;
     j++;
 

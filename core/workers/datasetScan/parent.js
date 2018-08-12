@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var moment = require('moment');
 var async = require('async');
+var os = require('os');
 
 var util = require('../../util');
 var dirs = util.dirs();
@@ -19,7 +20,10 @@ module.exports = function(config, done) {
     if(err)
       return done(err);
 
-    async.each(markets, (market, next) => {
+      let numCPUCores = os.cpus().length;
+      if(numCPUCores === undefined)
+         numCPUCores = 1;
+      async.eachLimit(markets, numCPUCores, (market, next) => {
 
       let marketConfig = _.clone(config);
       marketConfig.watch = market;

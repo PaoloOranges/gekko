@@ -1,14 +1,14 @@
 # Creating a strategy
 
-Strategies are the core of Gekko's trading bot. They look at the market and decide what to do based on technical analysis indicators. As of now all strategies are limited to a single market on a single exchange.
+Strategies are the core of Gekko's trading bot. They look at the market and decide what to do based on technical analysis indicators. A single strategy is limited to a single market on a single exchange.
 
-Gekko currently comes with [a couple of strategies](./example_strategies.md) out of box. Besides those you can also create your own strategy in javascript. The easiest way to do this is open the file `gekko/strategies/custom.js` and write your own trading method.
+Gekko currently comes with [a couple of strategies](./introduction.md) out of the box. Besides those you can also write your own strategy in javascript. The easiest way to do this is to customize the file `gekko/strategies/custom.js`.
 
 ## Creating a strategy
 
-A strategy is a combination of functions that get market data in the form of candles (OHCL, volume and the average weighted price).
+A strategy is a module with a few functions that get market data in the form of candles ([OHLC](https://en.wikipedia.org/wiki/Open-high-low-close_chart), volume, and the average weighted price) and output trading advice.
 
-## Boilerplate strategies
+## Strategy boilerplate
 
     // Let's create our own strategy
     var strat = {};
@@ -46,114 +46,65 @@ A strategy is a combination of functions that get market data in the form of can
 
     module.exports = strat;
 
-In the boilerplate we define four functions you have to write yourself. The functions are executed like so:
+# Strategy lifecycle methods
 
-- On starup: run init.
-- On new candle: run update.
- - if required history has been build: run log, run check.
+The above boilerplate contains four functions. These functions are executed by Gekko like so:
+
+- When Gekko starts: run init.
+- On each new candle:
+  - run [update](#update-function)
+  - once the strategy has completed warmup:
+    - run [log](#log-function)
+    - run [check](#check-function)
 
 ### init function
 
-This function is executed when Gekko prepares your method, here you can initialize some stuff you need later on. For example if you need to keep state between new candles.
+Executed when the trading strategy starts. Your strategy can initialize state and [register indicators](#Indicators).
 
 ### update function
 
-This function executes on every new candle, you can do your own calculations on the candle here.
+This function executes on every new candle. You can access the latest candle as the first (and only) parameter (it's also stored in `this.candle`).
 
 ### log function
 
-The log function is executed when the `debug` flag is on in the config, you can use this to log some numbers you've calculated which will make it easier to troubleshoot why your strategy acted the way it did.
+The log function is executed on every new candle when the `debug` flag is on (always off when running in the UI, as configured in [the config](../commandline/about_the_commandline.md) for CLI gekkos). Logging is used to log certain state from the strategy and can be used to debug your strategy to get more insights in why it took certain decisions.
 
 ### check function
 
-The check function is executed after the required history period is over: Most strategies can't start right away but need a number of candles before they can start giving advice (like when you want to calculate averages). The default required history is 0. You can set it like so in your init function:
+Most strategies need to warmup before the trading strategy can be started. For example the strategy may be calculating a moving average for the first 3 candles, as such it must have at least 3 candles to output a number the strategy logic relies on. The check function is executed after the warmup period is over. The default required history is 0. You can set it like so in your init function:
 
     this.requiredHistory = 5; // require 5 candles before giving advice
 
-If you find out in the check function that you want to give a new advice to the trader or any other part you can use the advice function:
+If you find out in the check function that you want to give new advice to the trader you can use the advice function:
 
     this.advice('short');
     // or
     this.advice('long');
-    
-### candle variables when creating your strategy
 
-You can use different candle variables when writing your strategies, depending on what you have in mind, using additional variables might help you to improve your results.
+### candle variable
 
-Possible candle variables are:
+The following list of candle variables will be available when writing strategies:
+
  - candle.close: the closing price of the candle
  - candle.high: the highest price of the candle
  - candle.low: the lowest price of the candle
  - candle.volume: the trading volume of that candle
  - candle.trades: number of trades in that candle
- 
-Keep in mind that this variables will give you different results depending on the candle-size you're using.
 
-
-### basic strategy example
-
-This a basic strategy example that buys and sells BTC/USDT when it hits a specific price.
-
-    // Let's create our own buy and sell strategy 
-    var strat = {};
-
-    // Prepare everything our strat needs
-    strat.init = function() {
-      // setting buy price
-      this.buyPrice = 2000;
-      
-      // setting sell price
-      this.sellPrice = 2500;
-    }
-
-    // What happens on every new candle?
-    strat.update = function(candle) {
-      // your code!
-    }
-
-    // For debugging purposes.
-    strat.log = function() {
-      // your code!
-    }
-
-    // Based on the newly calculated
-    // information, check if we should
-    // update or not.
-    strat.check = function() {
-        // buy when it hits buy price
-        if(candle.close <= this.buyPrice) {
-            this.advice("long");
-            // do some output
-            console.log("buying BTC @", candle.close);
-            return;
-        }
-        
-        // sell when it hits sell price
-        if(candle.close >= this.sellPrice) {
-            this.advice("short");
-            // do some output
-            console.log("selling BTC @", candle.close);
-            console.log("Profit:", (candle.close-this.buyPrice));
-            return;
-        }
-    }
-
-    module.exports = strat;
-
-## Strategy rules
+## Things to keep in mind
 
 - You can activate your own strategy by setting `config.tradingAdvisor.strategy` to `custom` (or whatever you named your file inside the `gekko/strategies`) in the loaded config.
-- Gekko will execute the functions for every candle. A candle is the size in minutes configured at `config.tradingAdvisor.candleSize` in the loaded config.
+- Gekko will execute the `update` function for every new candle. A candle is the size in minutes configured at `config.tradingAdvisor.candleSize` in the loaded config.
 - It is advised to set history `config.tradingAdvisor.historySize` the same as the requiredHistory as Gekko will use this property to create an initial batch of candles.
 - Never rely on anything based on system time because each method can run on live markets as well as during backtesting. You can look at the `candle.start` property which is a `moment` object of the time the candles started.
 
 ## Strategy tools
 
-To help you Gekko has a number of tools to make it easier:
+To help you Gekko has a number of strategy tools.
 
 ### Indicators
 
-Gekko supports a few indicators natively, but also supports integration with the great library [TA-lib](http://ta-lib.org/).
+Gekko supports a few indicators natively, in addition to the integration of indicators from the library [TA-lib](http://ta-lib.org/).
 
 #### Example usage
 
@@ -174,8 +125,8 @@ or
 
 The first parameter is the name, the second is the indicator type you want and the third is an object with all indicator parameters. If you want an MACD indicator you can do it like so:
 
-In your init method:
-  
+In your init function:
+
     // add a native indicator
     var parameters = {short: 10, long: 20, signal: 9};
     this.addIndicator('mynativemacd', 'MACD', parameters);
@@ -188,51 +139,51 @@ In your init method:
     var parameters = {optInFastPeriod: 10, optInSlowPeriod: 21, optInSignalPeriod: 9};
     this.addTulipIndicator('mytulipmacd', 'macd', parameters);
 
-In your check or update method:
+In your check or update function:
 
     var result = this.indicators.mytalibmacd.result;
 
-See the [TA-lib indicators](https://github.com/askmike/gekko/blob/stable/docs/trading_bot/talib_indicators.md) document for a list of all suppported TA-lib indicators and their required parameters.
+See the [TA-lib indicators](./talib_indicators.md) document for a list of all supported TA-lib indicators and their required parameters.
 
-See the [Tulip indicators](https://github.com/askmike/gekko/blob/stable/docs/trading_bot/tulip_indicators.md) document for a list of all supported Tulip indicators and their required parameters.
+See the [Tulip indicators](./tulip_indicators.md) document for a list of all supported Tulip indicators and their required parameters.
 
-### Configurables
+### Strategy parameters
 
-You can create configurable parameters for your method which allows you to adjust the behaviour for your trading method. This way you can create one method but have different implementations running at the same time on different markets. You can achieve this by creating some parameters which can be changed in the `config/strategies` directory:
+Adjust strategy execution by creating custom strategy parameters. This way the same strategy can execute strategies concurrently using different parameters for different markets. For example the MACD strategy has parameters concerning the underlying MACD indicator (such as values for the LONG and SHORT EMAs). Create custom configuration settings in the `config/strategies` directory:
 
     // custom settings:
     config.custom = {
       my_custom_setting: 10,
     };
 
-And in your method you can use them again (for example to pass to an indicator):
+Retrieve them in your strategy like this:
 
     // anywhere in your code:
-    this.settings.my_custom_setting; // is now 10
+    log.debug(this.settings.my_custom_setting); // Logs 10
 
-___The name of your configuration must be the same as the name of the strategy___
+___Note that the name of your configuration must be the same as the name of the strategy___
 
-### Tool libraries
+### External libraries
 
-Gekko uses a few general purpose libraries a lot internally, you can use those in your methods as well. Most notable libraries are [lodash](http://lodash.com/) (similar as underscore) and [async](https://github.com/caolan/async).
+Gekko uses a few general purpose libraries internally.  The API from those libraries are available to you as well.  Most notable libraries are [lodash](http://lodash.com/) (similar as underscore) and [async](https://github.com/caolan/async).
 
 You can load them like so:
 
-    // before any methods
+    // before any other code
     var _ = require('lodash');
     var async = require('async');
 
 ### Logging
 
-Gekko has a small logger you can use (preferably in your log method):
+Gekko has a small logger you can use (preferably in your log function):
 
-    // before any methods
+    // before any other code
     var log = require('../core/log.js');
 
-    // in your log method
+    // in your log function
     log.debug('hello world');
 
 
 -----
 
-Take a look at the existing methods, if you have questions feel free to create an issue. If you created your own awesome trading method and want to share it with the world feel free to contribute it to gekko.
+Take a look at the existing methods, if you have questions feel free to create an issue. If you created your own awesome strategies and want to share it with the world feel free to contribute it to gekko.

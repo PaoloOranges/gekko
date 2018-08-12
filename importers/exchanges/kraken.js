@@ -1,7 +1,7 @@
-var KrakenClient = require('kraken-api-es5')
-var util = require('../../core/util.js');
 var _ = require('lodash');
 var moment = require('moment');
+
+var util = require('../../core/util.js');
 var log = require('../../core/log');
 
 var config = util.getConfig();
@@ -26,16 +26,23 @@ var fetch = () => {
 
     if (lastId) {
         var tidAsTimestamp = lastId / 1000000;
-        fetcher.getTrades(tidAsTimestamp, handleFetch);
+        setTimeout(() => {
+            fetcher.getTrades(tidAsTimestamp, handleFetch)
+        }, 500);
     }
     else
         fetcher.getTrades(from, handleFetch);
 }
 
-var handleFetch = (unk, trades) => {
-    var last = moment.unix(_.last(trades).date);
-    lastId = _.last(trades).tid
+var handleFetch = (err, trades) => {
+    if (err) {
+        log.error(`There was an error importing from Kraken ${err}`);
+        fetcher.emit('done');
+        return fetcher.emit('trades', []);
+    }
 
+    var last = moment.unix(_.last(trades).date).utc();
+    lastId = _.last(trades).tid
     if(last < from) {
         log.debug('Skipping data, they are before from date', last.format());
         return fetch();
