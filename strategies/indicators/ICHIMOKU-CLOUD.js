@@ -56,8 +56,8 @@ Indicator.prototype.computeLine = function(bufferAsArray)
     var maxVal = 0;
     var minVal = 0;
     const bufferSize = bufferAsArray.length;
-    MaxIndicator.indicator([bufferAsArray], [bufferSize], function(err, res) { maxVal = res[0][0];});
-    MinIndicator.indicator([bufferAsArray], [bufferSize], function(err, res) { minVal = res[0][0];});
+    MaxIndicator.indicator([bufferAsArray], [bufferSize], (err, res) => { maxVal = res[0][0];});
+    MinIndicator.indicator([bufferAsArray], [bufferSize], (err, res) => { minVal = res[0][0];});
 
     return (maxVal + minVal) / 2;
 }
