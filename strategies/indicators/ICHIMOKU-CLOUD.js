@@ -4,7 +4,7 @@ const MaxIndicator = require('tulind').indicators.max;
 const MinIndicator = require('tulind').indicators.min;
 const CircularBuffer = require('circular-buffer');
 
-var Indicator = function (config) 
+let Indicator = function (config) 
 {
     // config must contain:
     // TENKAN-SEN (Conversion Line) period (default 9)
@@ -100,6 +100,18 @@ Indicator.prototype.update = function (price)
 
 Indicator.prototype.calculate = function (price) 
 {
+}
+
+// distance SpanA - SpanB 
+Indicator.prototype.getCloudSize = function()
+{
+    return this.result.senkouSpanA - this.result.senkouSpanB;
+}
+
+// Diff in SpanA-SpanB > 0, green cloud. Red otherwise.
+Indicator.prototype.getCloudColor = function()
+{
+    return this.getCloudSize() > 0 ? "GREEN" : "RED";
 }
 
 module.exports = Indicator;

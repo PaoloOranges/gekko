@@ -34,7 +34,7 @@ describe('indicators/ICHIMOKU-CLOUD', function() {
     const verifiedSenkouSpanB = [955.9935375, 955.9935375, 955.9935375, 978.6204438, 980.0449938, 980.0449938, 980.1367438, 987.9878438, 987.9878438, 1003.861569, 1022.317277, 1035.181869, 1044.256188, 1051.526438, 1051.526438, 1053.6738, 1057.822563, 1080.067481, 1080.067481, 1087.730113, 1087.730113, 1087.730113, 1087.730113, 1087.730113, 1087.730113, 1089.092813, 1100.5365, 1100.5365, 1100.5365, 1100.5365, 1103.159663, 1118.686181, 1113.529857, 1113.529857, 1113.529857, 1113.529857, 1113.529857, 1113.529857, 1113.529857, 1113.529857, 1113.529857, 1113.529857, 1113.529857, 1113.529857, 1113.529857, 1113.529857, 1113.529857, 1113.529857, 1113.529857, 1113.529857];    
     // 52 days shift as spanB
     const verifiedCloudColor = ["GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "GREEN", "GREEN", "GREEN"];
-    
+
     it('should correctly calculate TenkanSen with default weight 9', function() {
       let ichimokuCloud = new ICHIMOKUCLOUD(configPeriods);
       _.each(prices, function(p, i) {
@@ -83,4 +83,15 @@ describe('indicators/ICHIMOKU-CLOUD', function() {
         });      
       });
       
+      it('should correctly give cloud color after senkouSppanB periods', function() {
+        var ichimokuCloud = new ICHIMOKUCLOUD(configPeriods);
+        _.each(prices, function(p, i) {
+          ichimokuCloud.update(p);
+          if(i >= configPeriods.senkouspanb - 1)
+          {
+              var j = i - (configPeriods.senkouspanb - 1);
+              expect(ichimokuCloud.getCloudColor()).to.equal(verifiedCloudColor[j]);
+          }        
+        });      
+      });
   });
