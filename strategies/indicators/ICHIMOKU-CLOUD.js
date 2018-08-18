@@ -90,16 +90,44 @@ Indicator.prototype.update = function (price)
     const senkouSpanAValue = this.computeSenkouSpanA(tenkanSenValue, kijunSenValue);
     const senkousSpanBValue = this.computeSenkouSpanB();
     const chikouSpanValue = this.getChikouSpan();
+    const trendValue = this.calculateTrend(price, senkouSpanAValue, senkousSpanBValue);
 
     this.result = { tenkanSen : tenkanSenValue, 
         kijunSen : kijunSenValue, 
         senkouSpanA : senkouSpanAValue, 
         senkouSpanB : senkousSpanBValue, 
-        chikouSpan : chikouSpanValue};
+        chikouSpan : chikouSpanValue,
+        trend : trendValue};
 }
 
 Indicator.prototype.calculate = function (price) 
 {
+}
+
+Indicator.prototype.calculateTrend = function (price, senkouSpanAValue, senkouSpanBValue) 
+{
+    if(price > senkouSpanAValue)
+    {
+        if(price > senkouSpanBValue)
+        {
+            return "UP";
+        }
+        else
+        {
+            return "FLAT";
+        }
+    }
+    else
+    {
+        if(price > senkouSpanBValue)
+        {
+            return "FLAT";
+        }
+        else
+        {
+            return "DOWN";
+        }
+    }
 }
 
 // distance SpanA - SpanB 
@@ -112,6 +140,12 @@ Indicator.prototype.getCloudSize = function()
 Indicator.prototype.getCloudColor = function()
 {
     return this.getCloudSize() > 0 ? "GREEN" : "RED";
+}
+
+// Diff in SpanA-SpanB > 0, green cloud. Red otherwise.
+Indicator.prototype.getTrend = function()
+{
+    return this.result.trend;
 }
 
 module.exports = Indicator;
