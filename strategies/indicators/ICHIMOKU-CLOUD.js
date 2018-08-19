@@ -1,4 +1,10 @@
 // @link http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ichimoku_cloud
+//
+// ELEMENTS:
+// TENKAN-SEN (Conversion Line)
+// KIJUN-SEN (Base Line)
+// SENKOU-SPAN B (Leading Span B)
+// CHIKOU-SPAN (Lagging span)
 
 const MaxIndicator = require('tulind').indicators.max;
 const MinIndicator = require('tulind').indicators.min;
