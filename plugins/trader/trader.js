@@ -200,7 +200,7 @@ Trader.prototype.processAdvice = function(advice) {
       });
     }
 
-    amount = this.portfolio.asset * 0.95;
+    amount = this.portfolio.asset;
 
     log.info(
       'Trader',
@@ -246,7 +246,7 @@ Trader.prototype.createOrder = function(side, amount, advice, id) {
 
   this.order = this.broker.createOrder(type, side, amount);
 
-  this.order.on('filled', f => log.info('[ORDER] partial', side, ' fill, total filled:', f));
+  this.order.on('fill', f => log.info('[ORDER] partial', side, 'fill, total filled:', f));
   this.order.on('statusChange', s => log.debug('[ORDER] statusChange:', s));
 
   this.order.on('error', e => {
@@ -265,6 +265,20 @@ Trader.prototype.createOrder = function(side, amount, advice, id) {
   });
   this.order.on('completed', () => {
     this.order.createSummary((err, summary) => {
+      if(!err && !summary) {
+        err = new Error('GB returned an empty summary.')
+      }
+
+      if(err) {
+        log.error('Error while creating summary:', err);
+        return this.deferredEmit('tradeErrored', {
+          id,
+          adviceId: advice.id,
+          date: moment(),
+          reason: err.message
+        });
+      }
+
       log.info('[ORDER] summary:', summary);
       this.order = null;
       this.sync(() => {
