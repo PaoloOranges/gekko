@@ -13,7 +13,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Debug Gekko",
             "program": "${workspaceFolder}/gekko.js",
             "args": [
                 "--ui"
