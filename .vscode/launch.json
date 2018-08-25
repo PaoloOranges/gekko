@@ -13,6 +13,14 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Debug Current File",
+            "program": "${file}",
+            
+            "autoAttachChildProcesses": true
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Debug Gekko",
             "program": "${workspaceFolder}/gekko.js",
             "args": [
@@ -20,7 +28,8 @@
             ],
             "env": {
                 "NODE_ENV": "DEBUG"
-            }
+            },
+            "autoAttachChildProcesses": true
         },
         {
             "name": "Attach",
