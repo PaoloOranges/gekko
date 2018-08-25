@@ -6,17 +6,17 @@ module.exports = (mode, config, callback) => {
     process.execArgv = [];
   }
   
-  let child = null;
-  if(process.env.NODE_ENV != "undefined" && process.env.NODE_ENV == "DEBUG")
-  {
-    let debugPort = process.debugPort + 1;
-    child = fork(__dirname + '/child', [], { execArgv: ['--inspect-brk=', debugPort]});
-  }
-  else
-  {
-    child = fork(__dirname + '/child');
-  }
-  
+  let child = (() => {
+    if(process.env.NODE_ENV != "undefined" && process.env.NODE_ENV == "DEBUG")
+    {
+      let debugPort = process.debugPort + 1;
+      return fork(__dirname + '/child', [], { execArgv: ['--inspect-brk='+ debugPort]});
+    }
+    else
+    {
+      return fork(__dirname + '/child');
+    }
+  })();  
 
   // How we should handle client messages depends
   // on the mode of the Pipeline that is being ran.
