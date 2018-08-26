@@ -1,0 +1,63 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Playground",
+            "program": "${workspaceFolder}/debugPlayground.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Current File",
+            "program": "${file}",
+            
+            "autoAttachChildProcesses": true
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Gekko",
+            "program": "${workspaceFolder}/gekko.js",
+            "args": [
+                "--ui"
+            ],
+            "env": {
+                "NODE_ENV": "DEBUG"
+            },
+            "autoAttachChildProcesses": true
+        },
+        {
+            "name": "Attach",
+            "type": "node",
+            "request": "attach",
+            "processId": "${command:PickProcess}"        
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Mocha All",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "args": [
+                "${workspaceFolder}/test"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Mocha Current File",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "args": [
+                "${file}"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        }
+    ]
+}
