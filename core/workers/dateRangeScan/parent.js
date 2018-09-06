@@ -1,5 +1,13 @@
 var ForkTask = require('relieve').tasks.ForkTask;
-var fork = require('child_process').fork;
+
+if(process.env.NODE_ENV === "DEBUG")
+{
+  var fork = require('../../../debug_tools/child_process_debug').fork;
+}
+else
+{
+  var fork = require('child_process').fork;
+}
 
 module.exports = function(config, done) {
   var debug = typeof v8debug === 'object';
