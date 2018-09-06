@@ -15,7 +15,9 @@
             "request": "launch",
             "name": "Debug Current File",
             "program": "${file}",
-            
+            "env": {
+                "NODE_ENV": "DEBUG"
+            },
             "autoAttachChildProcesses": true
         },
         {
