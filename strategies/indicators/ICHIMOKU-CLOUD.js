@@ -12,6 +12,8 @@ const CircularBuffer = require('circular-buffer');
 
 let Indicator = function (config) 
 {
+    this.input = 'price';
+    
     // config must contain:
     // TENKAN-SEN (Conversion Line) period (default 9)
     // KIJUN-SEN (Base Line) period (default 26)
@@ -90,7 +92,11 @@ Indicator.prototype.computeSenkouSpanB = function()
 Indicator.prototype.update = function (price) 
 {
     this.priceBuffer.push(price);
+    this.calculate(price);
+}
 
+Indicator.prototype.calculate = function (price) 
+{
     const tenkanSenValue = this.computeTenkanSen();
     const kijunSenValue = this.computeKijunSen();
     const senkouSpanAValue = this.computeSenkouSpanA(tenkanSenValue, kijunSenValue);
@@ -104,10 +110,6 @@ Indicator.prototype.update = function (price)
         senkouSpanB : senkousSpanBValue, 
         chikouSpan : chikouSpanValue,
         trend : trendValue};
-}
-
-Indicator.prototype.calculate = function (price) 
-{
 }
 
 Indicator.prototype.calculateTrend = function (price, senkouSpanAValue, senkouSpanBValue) 
