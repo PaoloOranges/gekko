@@ -30,7 +30,7 @@ strat.check = function(candle) {
   let cloudColor = ichimokuCloud.getCloudColor();
   let trend = ichimokuCloud.getTrend();
 
-  log.debug('Cloud Color: ', cloudColor, ' trend: ', trend);
+  console.debug('Cloud Color: ', cloudColor, ' trend: ', trend);
 
 }
 
