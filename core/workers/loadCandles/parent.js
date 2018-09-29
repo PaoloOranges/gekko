@@ -32,7 +32,15 @@
 // })
 
 
-const fork = require('child_process').fork;
+if(process.env.NODE_ENV === "DEBUG")
+{
+  const fork = require('../../../debug_tools/child_process_debug').fork;
+}
+else
+{
+  const fork = require('child_process').fork;
+}
+
 const _ = require('lodash');
 
 module.exports = (config, callback) => {
@@ -56,7 +64,7 @@ module.exports = (config, callback) => {
 
     // else we are done and have candles!
     done(null, m);
-    child.kill('SIGINT');
+    this.disconnect();
   });
 
   child.on('exit', code => {

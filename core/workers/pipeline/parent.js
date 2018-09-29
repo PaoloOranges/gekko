@@ -1,4 +1,13 @@
-var fork = require('child_process').fork;
+
+if(process.env.NODE_ENV === "DEBUG")
+{
+  var fork = require('../../../debug_tools/child_process_debug').fork;
+}
+else
+{
+  var fork = require('child_process').fork;
+}
+
 
 module.exports = (mode, config, callback) => {
   var debug = typeof v8debug === 'object';

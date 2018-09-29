@@ -15,7 +15,9 @@
             "request": "launch",
             "name": "Debug Current File",
             "program": "${file}",
-            
+            "env": {
+                "NODE_ENV": "DEBUG"
+            },
             "autoAttachChildProcesses": true
         },
         {
@@ -35,13 +37,7 @@
             "name": "Attach",
             "type": "node",
             "request": "attach",
-            "port": 5858,
-            "address": "localhost",
-            "restart": false,
-            "sourceMaps": false,
-            "outFiles": [],
-            "localRoot": "${workspaceRoot}",
-            "remoteRoot": null
+            "processId": "${command:PickProcess}"        
         },
         {
             "type": "node",
