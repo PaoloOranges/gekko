@@ -16,6 +16,8 @@ strat.init = function() {
   this.maxPriceAfterBuy = 0;
   this.lastTrend = TREND.FLAT;
 
+  this.maxToCurrentSellRatio = this.settings.maxToCurrentSellRatio;
+
   this.addIndicator('ichimokuCloud', 'ICHIMOKU-CLOUD', this.settings);
 }
 
@@ -57,7 +59,7 @@ strat.checkSell = function(price, trend, color, result)
   {
     if(color === CLOUD_COLOR.GREEN)
     {
-      if(result.tenkanSen < result.kijunSen && (price/this.maxPriceAfterBuy <= 0.95) ) // conversion line < base line and current price less than 95% max
+      if(result.tenkanSen < result.kijunSen && (price/this.maxPriceAfterBuy <= this.maxToCurrentSellRatio) ) // conversion line < base line and current price less than this.maxToCurrentSellRatio% max
       {
         this.adviceSell(price);
       }
