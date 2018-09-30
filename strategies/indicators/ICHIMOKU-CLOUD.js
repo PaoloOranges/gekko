@@ -9,6 +9,8 @@
 const MaxIndicator = require('tulind').indicators.max;
 const MinIndicator = require('tulind').indicators.min;
 const CircularBuffer = require('circular-buffer');
+const TREND = require('./ICHIMOKU-CLOUD-TYPES.js').TREND;
+const CLOUD_COLOR = require('./ICHIMOKU-CLOUD-TYPES.js').CLOUD_COLOR;
 
 let Indicator = function (config) 
 {
@@ -118,22 +120,22 @@ Indicator.prototype.calculateTrend = function (price, senkouSpanAValue, senkouSp
     {
         if(price > senkouSpanBValue)
         {
-            return "UP";
+            return TREND.UP;
         }
         else
         {
-            return "FLAT";
+            return TREND.FLAT;
         }
     }
     else
     {
         if(price > senkouSpanBValue)
         {
-            return "FLAT";
+            return TREND.FLAT;
         }
         else
         {
-            return "DOWN";
+            return TREND.DOWN;
         }
     }
 }
@@ -147,7 +149,7 @@ Indicator.prototype.getCloudSize = function()
 // Diff in SpanA-SpanB > 0, green cloud. Red otherwise.
 Indicator.prototype.getCloudColor = function()
 {
-    return this.getCloudSize() > 0 ? "GREEN" : "RED";
+    return this.getCloudSize() > 0 ? CLOUD_COLOR.GREEN : CLOUD_COLOR.RED;
 }
 
 // Diff in SpanA-SpanB > 0, green cloud. Red otherwise.

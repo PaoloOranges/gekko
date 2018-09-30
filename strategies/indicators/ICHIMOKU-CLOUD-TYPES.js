@@ -6,4 +6,13 @@ const TREND = {
     UP: 1
 } ;
 
-module.exports = TREND;
+const CLOUD_COLOR = {
+    RED : 0,
+    GREEN : 1
+}
+
+const ICHIMOKU_CLOUD_TYPES = {
+    TREND,
+    CLOUD_COLOR
+}
+module.exports = ICHIMOKU_CLOUD_TYPES;
