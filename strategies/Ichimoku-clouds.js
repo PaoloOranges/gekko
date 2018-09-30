@@ -41,16 +41,21 @@ strat.check = function(candle) {
   const color = ichimokuCloud.getCloudColor();
   const result = ichimokuCloud.result;
 
+  let hasAdvised = false;
   if(this.bought)
   {
     this.maxPriceAfterBuy = Math.max(this.maxPriceAfterBuy, price);
-    this.checkSell(price, trend, color, result);
+    hasAdvised = this.checkSell(price, trend, color, result);
   }
   else
   {
-    this.checkBuy(price, trend, color, result);
+    hasAdvised = this.checkBuy(price, trend, color, result);
   }
 
+  if(!hasAdvised)
+  {
+    this.advice();
+  }
 }
 
 strat.checkSell = function(price, trend, color, result)
@@ -61,29 +66,31 @@ strat.checkSell = function(price, trend, color, result)
     {
       if(result.tenkanSen < result.kijunSen && (price/this.maxPriceAfterBuy <= this.maxToCurrentSellRatio) ) // conversion line < base line and current price less than this.maxToCurrentSellRatio% max
       {
-        this.adviceSell(price);
+         return this.adviceSell(price);
       }
     }
     else
     {
       // if(result.tenkanSen < result.kijunSen) ??
-      this.adviceSell(price);
+      return this.adviceSell(price);
     }
   }
   else
   {
     if(trend < this.lastTrend)
     {
-      this.adviceSell(price);
+      return this.adviceSell(price);
     }
     else
     {
       if(result.tenkanSen < result.kijunSen)
       {
-        this.adviceSell(price);
+        return this.adviceSell(price);
       }
     }
   }
+
+  return false;
 }
 
 strat.checkBuy = function(price, trend, color, result)
@@ -94,7 +101,7 @@ strat.checkBuy = function(price, trend, color, result)
     {
       if(result.tenkanSen > result.kijunSen) // conversion line > base line
       {
-        this.adviceBuy(price);
+        return this.adviceBuy(price);
       }
     }
     else
@@ -103,20 +110,21 @@ strat.checkBuy = function(price, trend, color, result)
       {
         if (result.tenkanSen > result.kijunSen) // conversion line > base line
         {
-          this.adviceBuy(price);
+          return this.adviceBuy(price);
         }
       }
       else if(trend == TREND.FLAT)
       {
         if (result.tenkanSen > result.kijunSen && this.lastTrend === TREND.DOWN) // conversion line > base line
         {
-          this.adviceBuy(price);
+          return this.adviceBuy(price);
         }
       }
     }
   }
 
   this.lastTrend = trend;
+  return false;
 }
 
 strat.adviceBuy = function(price)
@@ -124,6 +132,8 @@ strat.adviceBuy = function(price)
   console.debug("Advise Buy");
   this.bought = true;
   this.buyPrice = price;
+  this.advice('long');
+  return true;
 }
 
 strat.adviceSell = function(price)
@@ -131,6 +141,8 @@ strat.adviceSell = function(price)
   console.debug("Advise Sell. possible gain: " + (price/this.buyPrice));
   this.bought = false;
   this.buyPrice = 0;
+  this.advice('short');
+  return true;
 }
 
 module.exports = strat;
