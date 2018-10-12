@@ -99,13 +99,15 @@ strat.checkSell = function(candle, trend, color, result)
 strat.checkBuy = function(candle, trend, color, result)
 {  
   const price = candle.close;
+  let returnValue = false;
+
   if(trend === TREND.UP)
   {
     if(color === CLOUD_COLOR.GREEN)
     {
       if(result.tenkanSen > result.kijunSen) // conversion line > base line
       {
-        return this.adviceBuy(candle);
+        returnValue = this.adviceBuy(candle);
       }
     }
     else
@@ -114,21 +116,21 @@ strat.checkBuy = function(candle, trend, color, result)
       {
         if (result.tenkanSen > result.kijunSen) // conversion line > base line
         {
-          return this.adviceBuy(candle);
+          returnValue = this.adviceBuy(candle);
         }
       }
       else if(trend == TREND.FLAT)
       {
         if (result.tenkanSen > result.kijunSen && this.lastTrend === TREND.DOWN) // conversion line > base line
         {
-          return this.adviceBuy(candle);
+          returnValue = this.adviceBuy(candle);
         }
       }
     }
   }
 
   this.lastTrend = trend;
-  return false;
+  return returnValue;
 }
 
 strat.adviceBuy = function(candle)
