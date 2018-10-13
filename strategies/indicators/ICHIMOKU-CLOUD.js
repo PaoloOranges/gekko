@@ -28,31 +28,35 @@ let Indicator = function (config)
     console.debug('CHIKOU-SPAN (Lagging span) period %d', config.chikouspan);
 
     const bufferSize = Math.max(config.tenkansen, config.kijunsen, config.senkouspanb, config.chikouspan);
+    if(bufferSize < config.displacement)
+    {
+        console.error('displacement ' + config.displacement + ' bigger than max buffer size' + bufferSize);
+    }
     this.config = config;
 
     this.priceBuffer = new CircularBuffer(bufferSize);
 }
 
-function getArrayFrom(buffer, arraySize)
+function getArrayFrom(buffer, arraySize, displacement)
 {
-    const endIndex = buffer.size() - 1;
-    const startIndex = Math.max(0, (endIndex - arraySize)+1); // get return from start to end both included
+    const endIndex = buffer.size() - 1 - displacement;
+    const startIndex = Math.max(0, (endIndex - arraySize) + 1); // get return from start to end both included
     return buffer.get(startIndex, endIndex);
 }
 
-Indicator.prototype.getTenkanSenBuffer = function()
+Indicator.prototype.getTenkanSenBuffer = function(displacement)
 {
-    return getArrayFrom(this.priceBuffer, this.config.tenkansen);
+    return getArrayFrom(this.priceBuffer, this.config.tenkansen, displacement);
 }
 
-Indicator.prototype.getKijunSenBuffer = function()
+Indicator.prototype.getKijunSenBuffer = function(displacement)
 {
-    return getArrayFrom(this.priceBuffer, this.config.kijunsen);
+    return getArrayFrom(this.priceBuffer, this.config.kijunsen, displacement);
 }
 
 Indicator.prototype.getSenkouSpanBBuffer = function()
 {
-    return getArrayFrom(this.priceBuffer, this.config.senkouspanb);
+    return getArrayFrom(this.priceBuffer, this.config.senkouspanb, 0);
 }
 
 Indicator.prototype.getChikouSpan = function()
@@ -72,18 +76,20 @@ Indicator.prototype.computeLine = function(bufferAsArray)
     return (maxVal + minVal) / 2;
 }
 
-Indicator.prototype.computeTenkanSen = function()
+Indicator.prototype.computeTenkanSen = function(displacement)
 {
-    return this.computeLine(this.getTenkanSenBuffer());
+    return this.computeLine(this.getTenkanSenBuffer(displacement));
 }
 
-Indicator.prototype.computeKijunSen = function()
-{
-    return this.computeLine(this.getKijunSenBuffer());
+Indicator.prototype.computeKijunSen = function(displacement)
+{    
+    return this.computeLine(this.getKijunSenBuffer(displacement));
 }
-Indicator.prototype.computeSenkouSpanA = function(tenkanSenValue, kijunSenValue)
+Indicator.prototype.computeSenkouSpanA = function(tenkanSenValue, kijunSenValue, displacement)
 {
-    return (tenkanSenValue + kijunSenValue) / 2;
+    let displacedTenkanSenValue = this.computeTenkanSen(this.config.displacement);
+    let displacedKkijunSenValue = this.computeKijunSen(this.config.displacement);
+    return (displacedTenkanSenValue + displacedKkijunSenValue) / 2;
 }
 
 Indicator.prototype.computeSenkouSpanB = function()
@@ -99,8 +105,8 @@ Indicator.prototype.update = function (price)
 
 Indicator.prototype.calculate = function (price) 
 {
-    const tenkanSenValue = this.computeTenkanSen();
-    const kijunSenValue = this.computeKijunSen();
+    const tenkanSenValue = this.computeTenkanSen(0);
+    const kijunSenValue = this.computeKijunSen(0);
     const senkouSpanAValue = this.computeSenkouSpanA(tenkanSenValue, kijunSenValue);
     const senkousSpanBValue = this.computeSenkouSpanB();
     const chikouSpanValue = this.getChikouSpan();

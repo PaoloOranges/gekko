@@ -24,7 +24,8 @@ describe('indicators/ICHIMOKU-CLOUD', function() {
         tenkansen : 9,
         kijunsen : 26,
         senkouspanb : 52,
-        chikouspan : 26
+        chikouspan : 26,
+        displacement : 0
     };
 
     // 9 days shift
