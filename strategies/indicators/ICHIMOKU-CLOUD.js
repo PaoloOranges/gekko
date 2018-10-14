@@ -34,7 +34,7 @@ let Indicator = function (config)
     }
     this.config = config;
 
-    this.priceBuffer = new CircularBuffer(bufferSize);
+    this.priceBuffer = new CircularBuffer(bufferSize + config.displacement);
 }
 
 function getArrayFrom(buffer, arraySize, displacement)
@@ -54,9 +54,9 @@ Indicator.prototype.getKijunSenBuffer = function(displacement)
     return getArrayFrom(this.priceBuffer, this.config.kijunsen, displacement);
 }
 
-Indicator.prototype.getSenkouSpanBBuffer = function()
+Indicator.prototype.getSenkouSpanBBuffer = function(displacement)
 {
-    return getArrayFrom(this.priceBuffer, this.config.senkouspanb, 0);
+    return getArrayFrom(this.priceBuffer, this.config.senkouspanb, displacement);
 }
 
 Indicator.prototype.getChikouSpan = function()
@@ -85,7 +85,7 @@ Indicator.prototype.computeKijunSen = function(displacement)
 {    
     return this.computeLineValue(this.getKijunSenBuffer(displacement));
 }
-Indicator.prototype.computeSenkouSpanA = function(tenkanSenValue, kijunSenValue, displacement)
+Indicator.prototype.computeSenkouSpanA = function()
 {
     let displacedTenkanSenValue = this.computeTenkanSen(this.config.displacement);
     let displacedKkijunSenValue = this.computeKijunSen(this.config.displacement);
@@ -94,7 +94,7 @@ Indicator.prototype.computeSenkouSpanA = function(tenkanSenValue, kijunSenValue,
 
 Indicator.prototype.computeSenkouSpanB = function()
 {
-    return this.computeLineValue(this.getSenkouSpanBBuffer());
+    return this.computeLineValue(this.getSenkouSpanBBuffer(this.config.displacement));
 }
 
 Indicator.prototype.update = function (price) 
@@ -107,7 +107,7 @@ Indicator.prototype.calculate = function (price)
 {
     const tenkanSenValue = this.computeTenkanSen(0);
     const kijunSenValue = this.computeKijunSen(0);
-    const senkouSpanAValue = this.computeSenkouSpanA(tenkanSenValue, kijunSenValue);
+    const senkouSpanAValue = this.computeSenkouSpanA();
     const senkousSpanBValue = this.computeSenkouSpanB();
     const chikouSpanValue = this.getChikouSpan();
     const trendValue = this.calculateTrend(price, senkouSpanAValue, senkousSpanBValue);
