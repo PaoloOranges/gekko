@@ -19,7 +19,7 @@ strat.init = function() {
   this.maxToCurrentSellRatio = this.settings.maxToCurrentSellRatio;
 
   this.requiredHistory = this.tradingAdvisor.historySize;
-  
+
   this.addIndicator('ichimokuCloud', 'ICHIMOKU-CLOUD', this.settings);
 }
 
@@ -41,17 +41,17 @@ strat.check = function(candle) {
   const ichimokuCloud = this.indicators.ichimokuCloud;
   const trend = ichimokuCloud.getTrend();
   const color = ichimokuCloud.getCloudColor();
-  const result = ichimokuCloud.result;
+  const ichimokuResult = ichimokuCloud.result;
 
   let hasAdvised = false;
   if(this.bought)
   {
     this.maxPriceAfterBuy = Math.max(this.maxPriceAfterBuy, price);
-    hasAdvised = this.checkSell(candle, trend, color, result);
+    hasAdvised = this.checkSell(candle, trend, color, ichimokuResult);
   }
   else
   {
-    hasAdvised = this.checkBuy(candle, trend, color, result);
+    hasAdvised = this.checkBuy(candle, trend, color, ichimokuResult);
   }
 
   if(!hasAdvised)
@@ -60,77 +60,35 @@ strat.check = function(candle) {
   }
 }
 
-strat.checkSell = function(candle, trend, color, result)
-{
-  const price = candle.close;
-  if(trend === TREND.UP)
-  {
-    if(color === CLOUD_COLOR.GREEN)
-    {
-      if(result.tenkanSen < result.kijunSen && (price/this.maxPriceAfterBuy <= this.maxToCurrentSellRatio) ) // conversion line < base line and current price less than this.maxToCurrentSellRatio% max
-      {
-         return this.adviceSell(candle);
-      }
-    }
-    else
-    {
-      // if(result.tenkanSen < result.kijunSen) ??
-      return this.adviceSell(candle);
-    }
-  }
-  else
-  {
-    if(trend < this.lastTrend)
-    {
-      return this.adviceSell(candle);
-    }
-    else
-    {
-      if(result.tenkanSen < result.kijunSen)
-      {
-        return this.adviceSell(candle);
-      }
-    }
-  }
-
-  return false;
-}
-
-strat.checkBuy = function(candle, trend, color, result)
+strat.checkBuy = function(candle, trend, color, ichimokuResult)
 {  
   const price = candle.close;
   let returnValue = false;
 
-  if(trend === TREND.UP)
+  if(trend === TREND.DOWN)
   {
-    if(color === CLOUD_COLOR.GREEN)
+    if(price > ichimokuResult.tenkanSen)
     {
-      if(result.tenkanSen > result.kijunSen) // conversion line > base line
-      {
-        returnValue = this.adviceBuy(candle);
-      }
-    }
-    else
-    {
-      if (color === CLOUD_COLOR.GREEN) 
-      {
-        if (result.tenkanSen > result.kijunSen) // conversion line > base line
-        {
-          returnValue = this.adviceBuy(candle);
-        }
-      }
-      else if(trend == TREND.FLAT)
-      {
-        if (result.tenkanSen > result.kijunSen && this.lastTrend === TREND.DOWN) // conversion line > base line
-        {
-          returnValue = this.adviceBuy(candle);
-        }
-      }
+      returnValue = this.adviceBuy(candle);
     }
   }
 
   this.lastTrend = trend;
   return returnValue;
+}
+
+strat.checkSell = function(candle, trend, color, ichimokuResult)
+{
+  const price = candle.close;
+  if(trend === TREND.UP || (this.lastTrend === TREND.UP && trend === TREND.FLAT))
+  {
+    if(price < ichimokuResult.kijunSen)
+    {
+      this.adviceSell(candle);
+    }
+  }
+
+  return false;
 }
 
 strat.adviceBuy = function(candle)
