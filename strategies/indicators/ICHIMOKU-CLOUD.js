@@ -39,7 +39,7 @@ let Indicator = function (config)
 
 function getArrayFrom(buffer, arraySize, displacement)
 {
-    const endIndex = buffer.size() - 1 - displacement;
+    const endIndex = Math.max(0, buffer.size() - 1 - displacement);
     const startIndex = Math.max(0, (endIndex - arraySize) + 1); // get return from start to end both included
     return buffer.get(startIndex, endIndex);
 }
