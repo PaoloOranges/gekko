@@ -77,6 +77,20 @@ describe('indicators/ICHIMOKU-CLOUD', function() {
         });      
       });  
 
+      it('should correctly calculate SenkouSpan A with default weight 9-26 and displacement 26', function() {
+        let configPeriodsDisplacement = configPeriods;
+        configPeriodsDisplacement.displacement = 26
+        var ichimokuCloud = new ICHIMOKUCLOUD(configPeriodsDisplacement);
+        _.each(prices, function(p, i) {
+          ichimokuCloud.update(p);
+          if(i >= configPeriods.kijunsen + configPeriodsDisplacement.displacement - 1)
+          {
+              var j = i - (configPeriods.kijunsen + configPeriodsDisplacement.displacement) + 1;
+              expect(ichimokuCloud.result.senkouSpanA).to.closeTo(verifiedSenkouSpanA[j], 0.0001);
+          }        
+        });      
+      });
+
       it('should correctly calculate SenkouSpan B with default weight 52', function() {
         var ichimokuCloud = new ICHIMOKUCLOUD(configPeriods);
         _.each(prices, function(p, i) {
