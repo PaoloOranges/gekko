@@ -5,6 +5,7 @@
 // KIJUN-SEN (Base Line)
 // SENKOU-SPAN B (Leading Span B)
 // CHIKOU-SPAN (Lagging span)
+// DISPLACEMENT is to "mimic" the drawing of the cloud in the future
 
 const MaxIndicator = require('tulind').indicators.max;
 const MinIndicator = require('tulind').indicators.min;
@@ -21,11 +22,13 @@ let Indicator = function (config)
     // KIJUN-SEN (Base Line) period (default 26)
     // SENKOU-SPAN B (Leading Span B) period (default 52)
     // CHIKOU-SPAN (Lagging span) period (default 26)
+    // DISPLACEMENT (default 26)
     console.debug('ICHIMOKU-CLOUD using:');
     console.debug('TENKAN-SEN (Conversion Line) period %d', config.tenkansen);
     console.debug('KIJUN-SEN (Base Line) period %d', config.kijunsen);
     console.debug('SENKOU-SPAN B (Leading Span B) period %d', config.senkouspanb);
     console.debug('CHIKOU-SPAN (Lagging span) period %d', config.chikouspan);
+    console.debug('DISPLACEMENT for SenkouSpan A and B, to shift cloud, period %d', config.displacement);
 
     const bufferSize = Math.max(config.tenkansen, config.kijunsen, config.senkouspanb, config.chikouspan);
     if(bufferSize < config.displacement)
