@@ -8,7 +8,8 @@ var config = {
     tenkansen : 9,
     kijunsen : 26,
     senkouspanb : 52,
-    chikouspan : 26
+    chikouspan : 26,
+    displacement : 26
 }
 
 var tS = new IchimokuCloud(config);

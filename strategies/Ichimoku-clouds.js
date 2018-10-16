@@ -16,11 +16,13 @@ strat.init = function() {
   this.maxPriceAfterBuy = 0;
   this.lastTrend = TREND.FLAT;
 
-  this.maxToCurrentSellRatio = this.settings.maxToCurrentSellRatio;
+  this.maxToCurrentSellRatio = this.settings.generic.maxToCurrentSellRatio;
 
   this.requiredHistory = this.tradingAdvisor.historySize;
 
-  this.addIndicator('ichimokuCloud', 'ICHIMOKU-CLOUD', this.settings);
+  this.addIndicator('ichimokuCloud', 'ICHIMOKU-CLOUD', this.settings.ichimokuCloud);
+  let demaSettings = { optInTimePeriod : this.settings.dema.period};
+  this.addTulipIndicator('dema', 'dema', demaSettings);
 }
 
 // What happens on every new candle?
