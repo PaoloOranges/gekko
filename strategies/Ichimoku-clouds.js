@@ -21,8 +21,15 @@ strat.init = function() {
   this.requiredHistory = this.tradingAdvisor.historySize;
 
   this.addIndicator('ichimokuCloud', 'ICHIMOKU-CLOUD', this.settings.ichimokuCloud);
+
   let demaSettings = { optInTimePeriod : this.settings.dema.period};
   this.addTulipIndicator('dema', 'dema', demaSettings);
+
+  let emaSettings = { optInTimePeriod : this.settings.ema.period};;
+  this.addTulipIndicator('ema', 'ema', demaSettings);
+
+  let dmSettings = { optInTimePeriod : this.settings.directionalMovementIndex.period};;
+  this.addTulipIndicator('dmi', 'dm', dmSettings);
 }
 
 // What happens on every new candle?

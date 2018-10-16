@@ -8,5 +8,11 @@ displacement = 26
 [dema]
 period = 26
 
+[ema]
+period = 26
+
+[directionalMovementIndex]
+period = 26
+
 [generic]
 maxToCurrentSellRatio = 0.95
