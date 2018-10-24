@@ -14,7 +14,7 @@ strat.init = function() {
   this.lastPrice = 0;
   this.buyPrice = 0;
   this.maxPriceAfterBuy = 0;
-  this.lastTrend = TREND.FLAT;
+  this.lastTrend = TREND.FLAT;  
 
   this.maxToCurrentSellRatio = this.settings.generic.maxToCurrentSellRatio;
 
@@ -25,16 +25,17 @@ strat.init = function() {
   let demaSettings = { optInTimePeriod : this.settings.dema.period};
   this.addTulipIndicator('dema', 'dema', demaSettings);
 
-  let emaSettings = { optInTimePeriod : this.settings.ema.period};;
-  this.addTulipIndicator('ema', 'ema', demaSettings);
+  let emaSettings = { optInTimePeriod : this.settings.ema.period};
+  this.addTulipIndicator('ema', 'ema', emaSettings);
 
-  let dmSettings = { optInTimePeriod : this.settings.directionalMovementIndex.period};;
+  let dmSettings = { optInTimePeriod : this.settings.directionalMovementIndex.period};
   this.addTulipIndicator('dmi', 'dm', dmSettings);
+
+  let maSettings = {} 
 }
 
 // What happens on every new candle?
 strat.update = function(candle) {
-
 }
 
 // For debugging purposes.
@@ -70,13 +71,18 @@ strat.check = function(candle) {
 }
 
 strat.checkBuy = function(candle, trend, color, ichimokuResult)
-{  
+{ 
+  const demaResult = this.tulipIndicators.dema.result.result;
+  const emaResult = this.tulipIndicators.ema.result.result;
+  const dmiResult = this.tulipIndicators.dmi.result; // dmiPlus and dmLow
+
+
   const price = candle.close;
   let returnValue = false;
 
   if(trend === TREND.DOWN)
   {
-    if(price > ichimokuResult.tenkanSen)
+    if(price > ichimokuResult.tenkanSen)     
     {
       returnValue = this.adviceBuy(candle);
     }
@@ -88,12 +94,17 @@ strat.checkBuy = function(candle, trend, color, ichimokuResult)
 
 strat.checkSell = function(candle, trend, color, ichimokuResult)
 {
+  const demaResult = this.tulipIndicators.dema.result.result;
+  const emaResult = this.tulipIndicators.ema.result.result;
+  const dmiResult = this.tulipIndicators.dmi.result; // dmiPlus and dmLow
+
   const price = candle.close;
+
   if(trend === TREND.UP || (this.lastTrend === TREND.UP && trend === TREND.FLAT))
   {
     if(price < ichimokuResult.kijunSen)
     {
-      this.adviceSell(candle);
+      return this.adviceSell(candle);
     }
   }
 
