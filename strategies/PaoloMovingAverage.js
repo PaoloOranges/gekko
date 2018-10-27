@@ -62,7 +62,7 @@ strat.checkBuy = function (candle) {
         return this.adviceBuy(candle);
     }
 
-    if(demaResult > smaResult && price > smaResult && lrsResult.result > 1.5)
+    if(demaResult > smaResult && price > demaResult && lrsResult.result > 1.0)
     {
         return this.adviceBuy(candle);
     }
