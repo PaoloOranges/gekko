@@ -54,7 +54,7 @@ strat.checkBuy = function (candle) {
     const price = candle.close;
     let returnValue = false;
 
-    if (demaResult > smaResult) {
+    if (demaResult < smaResult && (price - demaResult) > 0.2*(smaResult - demaResult)) {
         returnValue = this.adviceBuy(candle);
     }
 
@@ -66,8 +66,13 @@ strat.checkSell = function (candle) {
     const smaResult = this.tulipIndicators.sma.result.result;
     const price = candle.close;
 
-    if (demaResult < smaResult) {
-        returnValue = this.adviceSell(candle);
+    if(price > 1.3*this.buyPrice)
+    {
+        return this.adviceSell(candle);
+    }
+
+    if (demaResult > smaResult && (demaResult - price) > 0.1*(demaResult - smaResult)) {
+        return this.adviceSell(candle);
     }
 
     return false;
