@@ -58,7 +58,7 @@ strat.checkBuy = function (candle) {
     const price = candle.close;
     let returnValue = false;
 
-    if (demaResult < smaResult && (price - demaResult) > 0.2*(smaResult - demaResult)) {
+    if (demaResult < smaResult && (price - demaResult) > 0.2*(smaResult - demaResult) && lrsResult.result > -0.5) {
         return this.adviceBuy(candle);
     }
 
