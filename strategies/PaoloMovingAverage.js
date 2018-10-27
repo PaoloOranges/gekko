@@ -20,6 +20,9 @@ strat.init = function () {
     let demaSettings = { optInTimePeriod: 108 };
     this.addTulipIndicator('dema', 'dema', demaSettings);
 
+    let linearRegressionSlopeSettings = { optInTimePeriod: 160 };
+    this.addTulipIndicator('linregslope', 'linregslope', linearRegressionSlopeSettings);
+
 }
 
 // What happens on every new candle?
@@ -50,23 +53,31 @@ strat.check = function (candle) {
 strat.checkBuy = function (candle) {
     const demaResult = this.tulipIndicators.dema.result.result;
     const smaResult = this.tulipIndicators.sma.result.result;
+    const lrsResult = this.tulipIndicators.linregslope.result;
 
     const price = candle.close;
     let returnValue = false;
 
     if (demaResult < smaResult && (price - demaResult) > 0.2*(smaResult - demaResult)) {
-        returnValue = this.adviceBuy(candle);
+        return this.adviceBuy(candle);
     }
 
-    return returnValue;
+    if(demaResult > smaResult && price > smaResult && lrsResult.result > 1.5)
+    {
+        return this.adviceBuy(candle);
+    }
+
+    return false;
 }
 
 strat.checkSell = function (candle) {
     const demaResult = this.tulipIndicators.dema.result.result;
     const smaResult = this.tulipIndicators.sma.result.result;
+    const lrsResult = this.tulipIndicators.linregslope.result;
+
     const price = candle.close;
 
-    if(price > 1.3*this.buyPrice)
+    if(price > 1.3*this.buyPrice && lrsResult.result < 1.5)
     {
         return this.adviceSell(candle);
     }
